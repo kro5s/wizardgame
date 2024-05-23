@@ -15,8 +15,6 @@ public class Hero : Sprite
     private Vector2 _velocity;
     private bool _onGround;
 
-    private bool _isDead;
-
     private Vector2 _direction = new(0, 0);
 
     public Hero(Texture2D texture, Vector2 position, int frameX, int frameY, Level level) : base(texture, position, frameX, frameY)
@@ -120,15 +118,8 @@ public class Hero : Sprite
         }
     }
 
-    public void Kill()
-    {
-        _isDead = true;
-    }
-
     public void Update()
     {
-        if (_isDead) return;
-
         UpdateVelocity();
         UpdatePosition();
         UpdateDirection();

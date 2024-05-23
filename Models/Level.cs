@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using game.Models;
 using mygame.Models;
+using System.IO.Pipes;
 
 namespace mygame;
 
@@ -11,8 +12,9 @@ public class Level : IDisposable
     private Hero _hero;
 
     private Score _score = new();
-    private readonly RenderTarget2D _target;
+    private RenderTarget2D _target;
 
+    private List<string> _lines;
     private Tile[,] _tiles;
     private Rectangle[,] _colliders;
     public Tile[,] Tiles => _tiles;
@@ -23,11 +25,16 @@ public class Level : IDisposable
 
     public Level(Stream fileStream, int id)
     {
-        List<string> lines = GetLevelFileLines(fileStream);
+        _lines = GetLevelFileLines(fileStream);
 
-        _tiles = new Tile[lines[0].Length, lines.Count];
-        _colliders = new Rectangle[lines[0].Length, lines.Count];
+        _tiles = new Tile[_lines[0].Length, _lines.Count];
+        _colliders = new Rectangle[_lines[0].Length, _lines.Count];
 
+        DrawMap(_lines);
+    }
+
+    private void DrawMap(List<string> lines)
+    {
         _target = new(Globals.GraphicsDevice, _tiles.GetLength(0) * Tile.Size, _tiles.GetLength(1) * Tile.Size);
 
         Globals.GraphicsDevice.SetRenderTarget(_target);
@@ -161,7 +168,7 @@ public class Level : IDisposable
 
         foreach (var enemy in _enemies)
         {
-            enemy.Update(_hero);
+            if (!enemy.IsDead) enemy.Update(_hero);
         }
 
         foreach (var campfire in _campfires)
@@ -169,7 +176,7 @@ public class Level : IDisposable
             campfire.Update(_hero.position);
         }
 
-        _hero.Update();
+        if (!_hero.IsDead) _hero.Update();
     }
 
     public void Draw()
@@ -198,6 +205,6 @@ public class Level : IDisposable
 
     public void Dispose()
     {
-        Globals.Content.UnloadAsset("character");
+        
     }
 }

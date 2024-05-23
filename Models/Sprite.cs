@@ -9,6 +9,8 @@ public class Sprite
     public int Width { get; }
     public int Height { get; }
 
+    public bool IsDead { get; set; }
+
     public AnimationManager Anims { get; set; }
 
     public Vector2 position;
@@ -22,8 +24,15 @@ public class Sprite
         _animation = new Animation(texture, frameX, frameY, 0.1f);
     }
 
+    public void Kill()
+    {
+        IsDead = true;
+    }
+
     public void Draw()
     {
+        if (IsDead) return;
+
         Anims.Draw(position);
     }
 }

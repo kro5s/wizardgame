@@ -1,4 +1,6 @@
 ﻿using mygame;
+using mygame.Controllers;
+using mygame.Managers;
 using mygame.Models;
 
 namespace game.Models;
@@ -23,22 +25,7 @@ public class Chest
 
     public void Update(Vector2 playerPosition)
     {
-        bool nearEnough = Vector2.Distance(playerPosition, _position) < 100;
-
-        if (nearEnough && !_isCollected)
-        {
-            _buttonDraw = true;
-        }
-        else
-        {
-            _buttonDraw = false;
-        }
-
-        if (nearEnough && Keyboard.GetState().IsKeyDown(Keys.E) && !_isCollected)
-        {
-            _score.Update(_value);
-            _isCollected = true;
-        }
+        ChestController.Update(_position, playerPosition, ref _isCollected, ref _buttonDraw, _score, _value);
     }
 
     public void Draw()

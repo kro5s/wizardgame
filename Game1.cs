@@ -37,9 +37,6 @@ namespace mygame
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
             Globals.Update(gameTime);
             _gameManager.Update();
 

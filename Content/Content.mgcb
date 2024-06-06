@@ -191,6 +191,9 @@
 #begin Levels/0.txt
 /copy:Levels/0.txt
 
+#begin Levels/1.txt
+/copy:Levels/1.txt
+
 #begin run.png
 /importer:TextureImporter
 /processor:TextureProcessor

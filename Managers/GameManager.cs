@@ -7,30 +7,25 @@ namespace mygame.Managers;
 
 public class GameManager
 {
-    private Level _level;
+    private readonly LevelManager _levelManager;
 
     public GameManager()
     {
-        using (Stream fileStream = TitleContainer.OpenStream("Content/Levels/0.txt"))
-        {
-            _level = new(fileStream, 0);
-        }
+        _levelManager = new LevelManager();
 
-        Globals.WindowSize = new(_level.Tiles.GetLength(0) * Tile.Size, _level.Tiles.GetLength(1) * Tile.Size);
+        Globals.WindowSize = new(57 * Tile.Size, 29 * Tile.Size);
     }
 
     public void Update()
     {
-        InputManager.Update();
-
-        _level.Update();
+        _levelManager.Update();
     }
 
     public void Draw()
     {
         Globals.SpriteBatch.Begin();
 
-        _level.Draw(); 
+        _levelManager.Draw(); 
 
         Globals.SpriteBatch.End();
     }

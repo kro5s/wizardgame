@@ -1,4 +1,5 @@
 ﻿using mygame;
+using mygame.Controllers;
 using mygame.Models;
 using static System.Formats.Asn1.AsnWriter;
 
@@ -22,26 +23,7 @@ public class Campfire
 
     public void Update(Vector2 playerPosition)
     {
-        bool nearEnough = Vector2.Distance(playerPosition, _position) < 100;
-
-        if (nearEnough && !_isFired)
-        {
-            _buttonDraw = true;
-        }
-        else
-        {
-            _buttonDraw = false;
-        }
-
-        if (nearEnough && Keyboard.GetState().IsKeyDown(Keys.E) && !_isFired)
-        {
-            _isFired = true;
-        }
-
-        if (_isFired)
-        {
-            _fireAnimation.Update();
-        }
+        CampfireController.Update(_position, playerPosition, ref _isFired, ref _buttonDraw, _fireAnimation);
     }
 
     public void Draw()

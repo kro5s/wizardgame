@@ -4,10 +4,11 @@ using System.IO;
 using game.Models;
 using mygame.Models;
 using System.IO.Pipes;
+using mygame.Controllers;
 
 namespace mygame;
 
-public class Level : IDisposable
+public class Level
 {
     private Hero _hero;
 
@@ -19,21 +20,22 @@ public class Level : IDisposable
     private Rectangle[,] _colliders;
     public Tile[,] Tiles => _tiles;
 
+    private EndRock _end;
     private List<Chest> _chests = new();
     private List<Campfire> _campfires = new();
     private List<Enemy> _enemies = new();
 
-    public Level(Stream fileStream, int id)
+    public Level(Stream fileStream)
     {
         _lines = GetLevelFileLines(fileStream);
 
         _tiles = new Tile[_lines[0].Length, _lines.Count];
         _colliders = new Rectangle[_lines[0].Length, _lines.Count];
 
-        DrawMap(_lines);
+        InitializeMap(_lines);
     }
 
-    private void DrawMap(List<string> lines)
+    private void InitializeMap(List<string> lines)
     {
         _target = new(Globals.GraphicsDevice, _tiles.GetLength(0) * Tile.Size, _tiles.GetLength(1) * Tile.Size);
 
@@ -103,7 +105,10 @@ public class Level : IDisposable
             case 't':
                 return new Tile(Globals.Content.Load<Texture2D>("tree2"), TileCollision.Passable);
             case 'e':
-                return new Tile(Globals.Content.Load<Texture2D>("end"), TileCollision.Passable);
+            {
+                _end = new EndRock(x, y);
+                return new Tile(null, TileCollision.Passable);
+                }
             case 'f':
             {
                 _campfires.Add(new(Globals.Content.Load<Texture2D>("campfire"), new(x * Tile.Size, y * Tile.Size)));
@@ -161,22 +166,7 @@ public class Level : IDisposable
 
     public void Update()
     {
-        foreach (var chest in _chests)
-        {
-            chest.Update(_hero.position);
-        }
-
-        foreach (var enemy in _enemies)
-        {
-            if (!enemy.IsDead) enemy.Update(_hero);
-        }
-
-        foreach (var campfire in _campfires)
-        {
-            campfire.Update(_hero.position);
-        }
-
-        if (!_hero.IsDead) _hero.Update();
+        LevelController.Update(_hero, _chests, _campfires, _enemies, _end);
     }
 
     public void Draw()
@@ -198,13 +188,9 @@ public class Level : IDisposable
             campfire.Draw();
         }
 
+        _end.Draw();
         _hero.Draw();
 
         _score.Draw();
-    }
-
-    public void Dispose()
-    {
-        
     }
 }
